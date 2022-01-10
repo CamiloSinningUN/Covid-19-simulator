@@ -3,326 +3,62 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Main;
+package lab02_juanjulio_jorgesalazar_camilosinning;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.Timer;
+import java.awt.event.KeyEvent;
 
-/**
- *
- * @author camil
- */
-public class Simulator extends javax.swing.JFrame {
+public class JCS extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Simulator
-     */
-    int nodos = -1;
-    int maskMode = -1;
+    Grafo grafo = new Grafo();
+    int contadorIteracion = 0;
+//    int vertices = 0;
+    Runnable runnable;
+    Thread hilo;
 
-    public Simulator() {
+    public JCS() {
         initComponents();
-        setExtendedState(Simulator.MAXIMIZED_BOTH);
-        dispose();
-        setUndecorated(true);
+
         initialSettings.setVisible(true);
         initialSettings.setLocationRelativeTo(null);
 
-
         //ubicar UI
-
         //ubicar panel
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         int sy = screenSize.height;
         int sx = screenSize.width;
-        setLayout(null);
+        backgroundPanel.setLocation(0, 0);
         backgroundPanel.setSize(sx, sy);
         backgroundPanel.setLayout(null);
         //Ubicar botones segun resolución de pantalla
         int x = backgroundPanel.getSize().width;
         styleLabel.setLocation(x / 2 - styleLabel.getSize().width / 2, 0);
         numberLabel.setLocation(styleLabel.getLocation().x + styleLabel.getSize().width / 2 - numberLabel.getSize().width / 2, 40);
-
         //ubicando botones superiores
         int xr = styleLabel.getLocation().x;
         nextButton.setLocation(xr + 150, 30);
         resetButton.setLocation(xr - 120, 30);
-
         //ubicando boton de close
         closeButton.setLocation(x - closeButton.getSize().width, 0);
-
         //Botones de reproduccion automatica
         int y = backgroundPanel.getSize().height;
         playStopPanel.setLocation(sx - 15 - playStopPanel.getSize().width, y / 2 - settingsPanel.getHeight() / 2);
-
         //ubicando settings
         settingsPanel.setLocation(15, y / 2 - settingsPanel.getHeight() / 2);
-
         //ubicar tablero
         tablero.setLocation(settingsPanel.getLocation().x + settingsPanel.getSize().width + 15, styleLabel.getLocation().y + styleLabel.getSize().height);
         tablero.setSize(sx - tablero.getLocation().x * 2, sy - tablero.getLocation().y - 50);
-        //Fin ubicar
-
+        //Fin ubicar UI
+        loadingLabel.setVisible(false);
     }
 
-    Vértice PTR;
+    boolean sw = true;
 
-    //Crea el grafo a partir de una matriz y una lista de adyacencia
-    public void InicioGrafo(Graphics g, int num_nodos, int mascarilla) {
-        int i = 0, j = 0;
-        int[][] Adyacencia = new int[num_nodos][num_nodos];
-
-        while (i < num_nodos) {
-            while (j < num_nodos) {
-                if (i == j) {
-                    Adyacencia[i][j] = 0;
-                } else {
-                    Adyacencia[i][j] = (int) (Math.random() * 2);
-                }
-                //Un 0 en la matriz significa que no están relacionados y un número entre 1 si existe una arista de i a j
-                if (Adyacencia[i][j] == 1) {
-                    Adyacencia[i][j] = (int) (Math.random() * 5) + 1;
-                }
-                j++;
-            }
-            j = 0;
-            i++;
-        }
-        if (SinNodosAislados(Adyacencia, num_nodos)) {
-            InicioGrafo(g, num_nodos, mascarilla);
-        }
-        GrafoComoLista(g, num_nodos, mascarilla, Adyacencia);
-    }
-
-    //Verifica que no haya nodos aislados
-    boolean SinNodosAislados(int Matriz[][], int num_nodos) {
-        boolean Aislados = false;
-        int i = 0, j = 0, aux = 0, acum = 0, acum2 = 0;
-
-        while (i < num_nodos) {
-            while (j < num_nodos) {
-                acum = Matriz[i][j] + acum;
-                j++;
-            }
-            if (acum == 0) {
-                while (aux < num_nodos) {
-                    acum2 = Matriz[aux][i] + acum2;
-                    aux++;
-                }
-                if (acum2 == 0) {
-                    Aislados = true;
-                    return Aislados;
-                }
-            } else {
-                j = 0;
-                i++;
-            }
-        }
-        return Aislados;
-    }
-
-    //Crea una lista donde cada nodo tendrá las características de los nodos del grafo
-    public void GrafoComoLista(Graphics g, int num_nodos, int mascarilla, int Matriz[][]) {
-        int i = 0;
-        Vértice p;
-        int infectado;
-        PTR = null;
-
-        while (i < num_nodos) {
-            Vértice q = null;
-            if (mascarilla == 0 || mascarilla == 1) {
-                q = new Vértice(0, mascarilla, i + 1);
-
-                //q.mascarilla = mascarilla;
-            } else {
-                q = new Vértice(0, (int) (Math.random() * 2), i + 1);
-                //q.mascarilla = (int) (Math.random() * 2);
-            }
-            q.linkIncidentes = null;
-            //1 significa que la persona está contagiada
-            //0 significa que la persona no está contagiada
-            if (PTR == null) {
-                PTR = q;
-            } else {
-                p = PTR;
-                while (p.link != null) {
-                    p = p.link;
-                }
-                p.link = q;
-                q.link = null;
-            }
-            i++;
-        }
-        ListaDeAdyacencia(Matriz, num_nodos, mascarilla);
-        infectado = PrimerInfectado(num_nodos, Matriz);
-        ActualizaInfectados(g, infectado, Matriz);
-    }
-
-    //Función que da al azar el primer infectado
-    int PrimerInfectado(int num_nodos, int Matriz[][]) {
-        int infectado, j = 0, acum = 0;
-
-        infectado = (int) (Math.random() * num_nodos) + 1;
-        while (j < num_nodos) {
-            acum = Matriz[infectado - 1][j] + acum;
-            j++;
-        }
-        if (acum == 0) {
-            PrimerInfectado(num_nodos, Matriz);
-        }
-        return infectado;
-    }
-
-    //Función que actualiza la lista con los infectados
-    public void ActualizaInfectados(Graphics g, int infectado, int Matriz[][]) {
-        Vértice p;
-
-        p = PTR;
-        while (p.num != infectado) {
-            p = p.link;
-        }
-        p.enfermo = 1;
-        Graficar.GraficarInicio(g, Matriz,tablero);
-    }
-
-    //Crea una multilista con los grafos y sus conexiones a partir de la lista ya creada
-    public void ListaDeAdyacencia(int Matriz[][], int num_nodos, int mascarilla) {
-        Vértice p;
-        int i = 0, j = 0;
-
-        p = PTR;
-        while (i < num_nodos) {
-            while (j < num_nodos) {
-                if (Matriz[i][j] > 0) {
-                    Vértice q = new Vértice(0, mascarilla, j);
-                    while ((p != null) && (p.num != (i + 1))) {
-                        p = p.link;
-                    }
-                    if ((p != null) && (p.linkIncidentes == null)) {
-                        p.linkIncidentes = q;
-
-                        q.linkIncidentes = null;
-                    } else {
-                        while ((p != null) && (p.linkIncidentes != null)) {
-
-                            p = p.linkIncidentes;
-                        }
-                        if (p != null) {
-                            p.linkIncidentes = q;
-                            q.linkIncidentes = null;
-                        }
-
-                    }
-                }
-                j++;
-            }
-            i++;
-        }
-    }
-
-    //Se encarga de generar las iteraciones en simulador y actualizar 
-
-    public void Iteracion(Graphics g, int Matriz[][]) {
-        Vértice p;
-        p = PTR;
-        while (p != null && p.enfermo == 0) {
-            p = p.link;
-        }
-
-        ProximosEnfermos(g, p, Matriz);
-    }
-
-    //Calcula el próximo contagiado en caso de que lo haya según las probabilidades dadas por el lab
-    public void ProximosEnfermos(Graphics g, Vértice p, int Matriz[][]) {
-        Vértice aux;
-
-        if (p.linkIncidentes != null) {
-            aux = p.linkIncidentes;
-            while (aux != null && aux.enfermo == 1) {
-                aux = aux.linkIncidentes;
-            }
-            if (aux == null) {
-                if (p.link != null) {
-                    p = p.link;
-                    while (p != null && p.enfermo == 0) {
-                        p = p.link;
-                    }
-                    if (p == null) {
-                        //Se terminó la simulación
-                        //Se puede crear un JOptionPane o algo
-                    } else {
-                        ProximosEnfermos(g, p, Matriz);
-                    }
-                } else {
-                    //Se terminó la simulación
-                    //Se puede crear un JOptionPane o algo
-                }
-            } else {
-                CalculaProbabilidades(g, p, aux, Matriz);
-            }
-        }
-    }
-
-    public void CalculaProbabilidades(Graphics g,Vértice p, Vértice aux, int Matriz[][]) {
-        if (p.mascarilla == 0 && aux.mascarilla == 0 && Matriz[p.num - 1][aux.num - 1] > 2) {
-            int prob;
-            prob = (int) (Math.random() * 100 + 1);
-            if (prob <= 80) {
-                ActualizaInfectados(g,aux.num, Matriz);
-            }
-            if (aux.linkIncidentes != null) {
-                aux = aux.linkIncidentes;
-                while (aux != null && aux.enfermo == 1) {
-                    aux = aux.linkIncidentes;
-                }
-
-            }
-            if (aux == null) {
-                if (p.link != null) {
-                    p = p.link;
-                    while (p != null && p.enfermo == 0) {
-                        p = p.link;
-                    }
-                    if (p == null) {
-                        //Se terminó la simulación
-                        //Se puede crear un JOptionPane o algo
-                    } else {
-                        ProximosEnfermos(g, p, Matriz);
-                    }
-                } else {
-                    //Se terminó la simulación
-                    //Se puede crear un JOptionPane o algo
-                }
-            }
-        } else if (p.mascarilla == 0 && aux.mascarilla == 0 && Matriz[p.num - 1][aux.num - 1] <= 2) {
-
-        } else if (p.mascarilla == 0 && aux.mascarilla == 1 && Matriz[p.num - 1][aux.num - 1] > 2) {
-
-        } else if (p.mascarilla == 0 && aux.mascarilla == 1 && Matriz[p.num - 1][aux.num - 1] <= 2) {
-
-        } else if (p.mascarilla == 1 && aux.mascarilla == 0 && Matriz[p.num - 1][aux.num - 1] > 2) {
-
-        } else if (p.mascarilla == 1 && aux.mascarilla == 0 && Matriz[p.num - 1][aux.num - 1] <= 2) {
-
-        } else if (p.mascarilla == 1 && aux.mascarilla == 1 && Matriz[p.num - 1][aux.num - 1] > 2) {
-
-        } else if (p.mascarilla == 1 && aux.mascarilla == 1 && Matriz[p.num - 1][aux.num - 1] <= 2) {
-
-        }
-    }
-
-    /**
-     * This method is called from within the constructor to initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is always
-     * regenerated by the Form Editor.
-     */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -339,6 +75,13 @@ public class Simulator extends javax.swing.JFrame {
         closeButton1 = new javax.swing.JButton();
         errorLabel = new javax.swing.JTextField();
         errorLabel1 = new javax.swing.JTextField();
+        loadingLabel = new javax.swing.JLabel();
+        nodeInformation = new javax.swing.JDialog();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        mascarillaLabel = new javax.swing.JLabel();
+        caminoLabel = new javax.swing.JLabel();
         backgroundPanel = new javax.swing.JPanel();
         closeButton = new javax.swing.JButton();
         numberLabel = new javax.swing.JLabel();
@@ -354,10 +97,16 @@ public class Simulator extends javax.swing.JFrame {
         tablero = new javax.swing.JPanel(){
             @Override
             public void paint(Graphics g){
-                super.paint(g);
-                InicioGrafo(g,nodos,maskMode);
+                if(i==1){
+                    grafo.InicioGrafo(g);
+                    i++;
+                    initialSettings.dispose();
+                }
+
             }
-        };
+
+        }
+        ;
         playStopPanel = new javax.swing.JPanel();
         playButton = new javax.swing.JButton();
         stopButton = new javax.swing.JButton();
@@ -390,6 +139,7 @@ public class Simulator extends javax.swing.JFrame {
         withoutMaskButton.setToolTipText("Without a mask");
         withoutMaskButton.setBorderPainted(false);
         withoutMaskButton.setContentAreaFilled(false);
+        withoutMaskButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         withoutMaskButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 withoutMaskButtonActionPerformed(evt);
@@ -401,6 +151,7 @@ public class Simulator extends javax.swing.JFrame {
         allMaskButton.setToolTipText("With mask");
         allMaskButton.setBorderPainted(false);
         allMaskButton.setContentAreaFilled(false);
+        allMaskButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         allMaskButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 allMaskButtonActionPerformed(evt);
@@ -412,6 +163,7 @@ public class Simulator extends javax.swing.JFrame {
         maskRandomButton.setToolTipText("Random");
         maskRandomButton.setBorderPainted(false);
         maskRandomButton.setContentAreaFilled(false);
+        maskRandomButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         maskRandomButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 maskRandomButtonActionPerformed(evt);
@@ -423,6 +175,7 @@ public class Simulator extends javax.swing.JFrame {
         startButton.setToolTipText("Start");
         startButton.setBorderPainted(false);
         startButton.setContentAreaFilled(false);
+        startButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         startButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 startButtonActionPerformed(evt);
@@ -435,6 +188,7 @@ public class Simulator extends javax.swing.JFrame {
         closeButton1.setToolTipText("Close");
         closeButton1.setBorderPainted(false);
         closeButton1.setContentAreaFilled(false);
+        closeButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         closeButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeButton1ActionPerformed(evt);
@@ -464,7 +218,7 @@ public class Simulator extends javax.swing.JFrame {
                 errorLabelKeyReleased(evt);
             }
         });
-        jPanel2.add(errorLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 210, 190, 30));
+        jPanel2.add(errorLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 210, 310, 30));
 
         errorLabel1.setEditable(false);
         errorLabel1.setFont(new java.awt.Font("Tw Cen MT Condensed", 0, 18)); // NOI18N
@@ -490,27 +244,111 @@ public class Simulator extends javax.swing.JFrame {
         });
         jPanel2.add(errorLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 410, 190, 30));
 
+        loadingLabel.setFont(new java.awt.Font("SimSun-ExtB", 0, 36)); // NOI18N
+        loadingLabel.setText("Loading...");
+        jPanel2.add(loadingLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 470, 190, 100));
+
         initialSettings.getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
 
+        nodeInformation.setMinimumSize(new java.awt.Dimension(122, 90));
+        nodeInformation.setUndecorated(true);
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel1.setMinimumSize(new java.awt.Dimension(120, 88));
+
+        jLabel1.setText("Marcarilla:");
+
+        jLabel5.setText("Camino de contagio:");
+
+        mascarillaLabel.setText("None");
+
+        caminoLabel.setText("Coming soon...");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addComponent(mascarillaLabel))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(caminoLabel)))
+                .addContainerGap(22, Short.MAX_VALUE))
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jLabel5)
+                    .addContainerGap(16, Short.MAX_VALUE)))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(mascarillaLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(caminoLabel)
+                .addContainerGap())
+            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGap(37, 37, 37)
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 14, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(35, Short.MAX_VALUE)))
+        );
+
+        javax.swing.GroupLayout nodeInformationLayout = new javax.swing.GroupLayout(nodeInformation.getContentPane());
+        nodeInformation.getContentPane().setLayout(nodeInformationLayout);
+        nodeInformationLayout.setHorizontalGroup(
+            nodeInformationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        nodeInformationLayout.setVerticalGroup(
+            nodeInformationLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 79, Short.MAX_VALUE)
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setExtendedState(JCS.MAXIMIZED_BOTH);
+        setUndecorated(true);
+        getContentPane().setLayout(null);
 
         backgroundPanel.setBackground(new java.awt.Color(255, 255, 255));
         backgroundPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         closeButton.setBackground(new java.awt.Color(255, 255, 255));
-        closeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/close.png"))); // NOI18N
+        closeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/close2.png"))); // NOI18N
+        closeButton.setToolTipText("Close");
         closeButton.setBorderPainted(false);
         closeButton.setContentAreaFilled(false);
+        closeButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         closeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeButtonActionPerformed(evt);
+            }
+        });
+        closeButton.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                closeButtonKeyPressed(evt);
             }
         });
         backgroundPanel.add(closeButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1230, 0, 130, 140));
 
         numberLabel.setFont(new java.awt.Font("Tw Cen MT Condensed", 0, 48)); // NOI18N
         numberLabel.setText("0");
-        backgroundPanel.add(numberLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(675, 40, 20, -1));
+        numberLabel.setToolTipText("Contador");
+        numberLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                numberLabelMouseClicked(evt);
+            }
+        });
+        backgroundPanel.add(numberLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(675, 40, 40, -1));
 
         styleLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/contador.png"))); // NOI18N
         backgroundPanel.add(styleLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 0, 130, 130));
@@ -519,6 +357,7 @@ public class Simulator extends javax.swing.JFrame {
         resetButton.setToolTipText("Reset");
         resetButton.setBorderPainted(false);
         resetButton.setContentAreaFilled(false);
+        resetButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         resetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetButtonActionPerformed(evt);
@@ -530,6 +369,17 @@ public class Simulator extends javax.swing.JFrame {
         nextButton.setToolTipText("Next");
         nextButton.setBorderPainted(false);
         nextButton.setContentAreaFilled(false);
+        nextButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        nextButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                nextButtonMouseClicked(evt);
+            }
+        });
+        nextButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nextButtonActionPerformed(evt);
+            }
+        });
         backgroundPanel.add(nextButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 30, 80, -1));
 
         settingsPanel.setBackground(new java.awt.Color(255, 255, 255));
@@ -559,6 +409,7 @@ public class Simulator extends javax.swing.JFrame {
         settingsPanel.add(allMaskButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 90, 70));
 
         maskRandomButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/aleatorio.png"))); // NOI18N
+        maskRandomButton1.setToolTipText("Random");
         maskRandomButton1.setBorderPainted(false);
         maskRandomButton1.setContentAreaFilled(false);
         maskRandomButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -569,6 +420,7 @@ public class Simulator extends javax.swing.JFrame {
         settingsPanel.add(maskRandomButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 30, 90, 70));
 
         withoutMaskButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/Whithout MAsk.png"))); // NOI18N
+        withoutMaskButton1.setToolTipText("Without mask");
         withoutMaskButton1.setBorderPainted(false);
         withoutMaskButton1.setContentAreaFilled(false);
         withoutMaskButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -581,6 +433,22 @@ public class Simulator extends javax.swing.JFrame {
         backgroundPanel.add(settingsPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 240, 90, 200));
 
         tablero.setBackground(new java.awt.Color(255, 255, 255));
+        tablero.setAutoscrolls(true);
+        tablero.setOpaque(false);
+        tablero.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableroMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                tableroMouseEntered(evt);
+            }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                tableroMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                tableroMouseReleased(evt);
+            }
+        });
 
         javax.swing.GroupLayout tableroLayout = new javax.swing.GroupLayout(tablero);
         tablero.setLayout(tableroLayout);
@@ -603,6 +471,7 @@ public class Simulator extends javax.swing.JFrame {
         playButton.setToolTipText("Play");
         playButton.setBorderPainted(false);
         playButton.setContentAreaFilled(false);
+        playButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         playButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 playButtonActionPerformed(evt);
@@ -614,6 +483,7 @@ public class Simulator extends javax.swing.JFrame {
         stopButton.setToolTipText("Stop");
         stopButton.setBorderPainted(false);
         stopButton.setContentAreaFilled(false);
+        stopButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         stopButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 stopButtonActionPerformed(evt);
@@ -623,76 +493,71 @@ public class Simulator extends javax.swing.JFrame {
 
         backgroundPanel.add(playStopPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(1260, 270, 90, 200));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(backgroundPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(backgroundPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE)
-        );
+        getContentPane().add(backgroundPanel);
+        backgroundPanel.setBounds(0, 0, 0, 0);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    int i = 1;
     private void closeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonActionPerformed
         System.exit(0);
     }//GEN-LAST:event_closeButtonActionPerformed
 
     private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
-        // TODO add your handling code here:
+
+        sw = false;
     }//GEN-LAST:event_stopButtonActionPerformed
 
     private void startButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startButtonActionPerformed
-        boolean sw = false, sw1 = false;
+        boolean sw2 = false, sw1 = false;
         //validaciones
         try {
             errorLabel.setText("");
-            nodos = Integer.parseInt(nodosTextField.getText());
-            if (nodos < 0) {
-                errorLabel.setText("Invalido");
+            grafo.cantidadNodos = Integer.parseInt(nodosTextField.getText());
+            Graficar.Radio = 20 * 10 / Integer.parseInt(nodosTextField.getText()) + 20;
+            if (grafo.cantidadNodos <= 1) {
+                errorLabel.setText("Inserte un numero valido");
             } else {
-                sw = true;
+                sw2 = true;
                 errorLabel.setText("");
             }
-            if (maskMode != -1) {
+            if (grafo.modoGrafo != -1) {
                 sw1 = true;
                 errorLabel1.setText("");
             } else {
                 errorLabel1.setText("Seleccione un modo");
             }
-
-            if (sw && sw1) {
-                initialSettings.dispose();
+            if (sw2 && sw1) {
+                startButton.setVisible(false);
+                loadingLabel.setVisible(true);
                 setVisible(true);
-                if (maskMode == 0) {
-                    withoutMaskButton1.setVisible(true);
-                    allMaskButton1.setVisible(false);
-                    maskRandomButton1.setVisible(false);
-                } else if (maskMode == 1) {
-                    withoutMaskButton1.setVisible(false);
-                    allMaskButton1.setVisible(true);
-                    maskRandomButton1.setVisible(false);
-                } else {
-                    withoutMaskButton1.setVisible(false);
-                    allMaskButton1.setVisible(false);
-                    maskRandomButton1.setVisible(true);
+                switch (grafo.modoGrafo) {
+                    case 0:
+                        withoutMaskButton1.setVisible(true);
+                        allMaskButton1.setVisible(false);
+                        maskRandomButton1.setVisible(false);
+                        break;
+                    case 1:
+                        withoutMaskButton1.setVisible(false);
+                        allMaskButton1.setVisible(true);
+                        maskRandomButton1.setVisible(false);
+                        break;
+                    default:
+                        withoutMaskButton1.setVisible(false);
+                        allMaskButton1.setVisible(false);
+                        maskRandomButton1.setVisible(true);
+                        break;
                 }
                 numberNodesLabel.setText(nodosTextField.getText());
                 nodosTextField.setText("");
                 withoutMaskButton.setEnabled(true);
                 maskRandomButton.setEnabled(true);
                 allMaskButton.setEnabled(true);
-
             }
-
-        } catch (Exception e) {
-            errorLabel.setText("Invalido");
+        } catch (NumberFormatException e) {
+            errorLabel.setText("Inserte un numero valido");
         }
 
-        // TODO add your handling code here:
     }//GEN-LAST:event_startButtonActionPerformed
 
     private void withoutMaskButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_withoutMaskButtonActionPerformed
@@ -700,8 +565,8 @@ public class Simulator extends javax.swing.JFrame {
         withoutMaskButton.setEnabled(false);
         maskRandomButton.setEnabled(true);
         allMaskButton.setEnabled(true);
-        maskMode = 0;
-        // TODO add your handling code here:
+        grafo.modoGrafo = 0;
+
     }//GEN-LAST:event_withoutMaskButtonActionPerformed
 
     private void maskRandomButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maskRandomButtonActionPerformed
@@ -709,17 +574,36 @@ public class Simulator extends javax.swing.JFrame {
         withoutMaskButton.setEnabled(true);
         maskRandomButton.setEnabled(false);
         allMaskButton.setEnabled(true);
-        maskMode = 2;
-        // TODO add your handling code here:
+        grafo.modoGrafo = 2;
+
     }//GEN-LAST:event_maskRandomButtonActionPerformed
 
     private void playButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playButtonActionPerformed
+        sw = true;
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                // Esto se ejecuta en segundo plano una única vez
+                while (sw) {
+                    // Pero usamos un truco y hacemos un ciclo infinito
+                    try {
+                        // En él, hacemos que el hilo duerma
+                        Thread.sleep(3500);
+                        // Y después realizamos las operaciones
+                        nextButton.doClick();
+                        // Así, se da la impresión de que se ejecuta cada cierto tiempo
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+        };
+        hilo = new Thread(runnable);
+        hilo.start();
 
-        // TODO add your handling code here:
     }//GEN-LAST:event_playButtonActionPerformed
 
     private void nodosTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nodosTextFieldActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_nodosTextFieldActionPerformed
 
     private void allMaskButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_allMaskButtonActionPerformed
@@ -727,12 +611,14 @@ public class Simulator extends javax.swing.JFrame {
         withoutMaskButton.setEnabled(true);
         maskRandomButton.setEnabled(true);
         allMaskButton.setEnabled(false);
-        maskMode = 1;
-        // TODO add your handling code here:
+        grafo.modoGrafo = 1;
+
     }//GEN-LAST:event_allMaskButtonActionPerformed
 
     private void closeButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButton1ActionPerformed
-        System.exit(0);        // TODO add your handling code here:
+
+        System.exit(0);
+
     }//GEN-LAST:event_closeButton1ActionPerformed
 
     private void errorLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_errorLabelMouseClicked
@@ -748,36 +634,138 @@ public class Simulator extends javax.swing.JFrame {
     }//GEN-LAST:event_errorLabelKeyReleased
 
     private void errorLabel1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_errorLabel1MouseClicked
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_errorLabel1MouseClicked
 
     private void errorLabel1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_errorLabel1ActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_errorLabel1ActionPerformed
 
     private void errorLabel1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_errorLabel1KeyReleased
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_errorLabel1KeyReleased
 
     private void withoutMaskButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_withoutMaskButton1ActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_withoutMaskButton1ActionPerformed
 
     private void allMaskButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_allMaskButton1ActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_allMaskButton1ActionPerformed
 
     private void maskRandomButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maskRandomButton1ActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_maskRandomButton1ActionPerformed
 
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
 
         setVisible(false);
         initialSettings.setVisible(true);
-
-        // TODO add your handling code here:
+        startButton.setVisible(true);
+        loadingLabel.setVisible(false);
+        i = 1;
+        Grafo.sw = true;
+        contadorIteracion = 0;
+        numberLabel.setText(contadorIteracion + "");
+        grafo.Infectados = null;
     }//GEN-LAST:event_resetButtonActionPerformed
+
+    private void closeButtonKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_closeButtonKeyPressed
+
+        if (evt.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            System.exit(0);
+        }
+
+    }//GEN-LAST:event_closeButtonKeyPressed
+
+    private void tableroMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableroMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tableroMouseEntered
+
+    private void nextButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nextButtonMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_nextButtonMouseClicked
+
+    private void tableroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableroMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tableroMouseClicked
+
+    private void tableroMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableroMousePressed
+
+        Point point = MouseInfo.getPointerInfo().getLocation();
+        int x = point.x;
+        int y = point.y;
+        y = y - tablero.getLocation().y;
+        x = x - tablero.getLocation().x;
+        nodosDibujados p = Graficar.misNodosDibujados;
+        while (p != null) {
+            if ((y < (p.y + Graficar.Radio / 2)) && (y > (p.y - Graficar.Radio / 2)) && (x > (p.x - Graficar.Radio / 2)) && (x < (p.x + Graficar.Radio / 2))) {
+                if (grafo.TieneMascarilla(p.numero)) {
+                    mascarillaLabel.setText("Sí");
+                    caminoLabel.setText("");
+
+                } else {
+                    mascarillaLabel.setText("No");
+                    caminoLabel.setText("");
+
+                }
+                if (!Graficar.PersonaEnferma(p.numero)) {
+                    Grafo.sw1=true;
+                    jLabel5.setText("Camino de contagio:");
+                    grafo.CaminoMasPeligroso(p.numero - 1);
+                    caminoLabel.setText(Grafo.caminomenor);
+                }else{
+                    Grafo.sw1=false;
+                    grafo.proxInfectar(p.numero);
+                    jLabel5.setText("Proximo a infectar:");
+                    caminoLabel.setText(Grafo.proxNodo+"");
+                }
+
+                nodeInformation.setVisible(true);
+                nodeInformation.setLocation(x, y);
+                break;
+            }
+
+            p = p.link;
+        }
+        System.out.println(Grafo.nodom);
+
+    }//GEN-LAST:event_tableroMousePressed
+
+    private void tableroMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableroMouseReleased
+
+        nodeInformation.setVisible(false);
+
+    }//GEN-LAST:event_tableroMouseReleased
+
+    private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
+
+        Graphics g = tablero.getGraphics();
+        grafo.Iteracion(g, grafo.Adyacencia);
+        nodosDibujados p = Graficar.misNodosDibujados;
+        while (p != null) {
+            if(Graficar.PersonaEnferma(p.numero)){
+                System.out.println("Infectado "+p.numero+" si");
+            }else{
+                 System.out.println("Infectado "+p.numero+" no");
+            }
+            
+            if (Graficar.PersonaEnferma(p.numero)) {
+                g.setColor(Color.white);
+                g.drawOval((int) p.x - Graficar.Radio / 2, (int) p.y - Graficar.Radio / 2, Graficar.Radio, Graficar.Radio);
+                g.setColor(Color.red);
+                g.drawOval((int) p.x - Graficar.Radio / 2, (int) p.y - Graficar.Radio / 2, Graficar.Radio, Graficar.Radio);
+            }
+            p = p.link;
+        }
+        contadorIteracion++;
+        numberLabel.setText(contadorIteracion + "");
+
+    }//GEN-LAST:event_nextButtonActionPerformed
+
+    private void numberLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_numberLabelMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_numberLabelMouseClicked
 
     /**
      * @param args the command line arguments
@@ -796,20 +784,21 @@ public class Simulator extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Simulator.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JCS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Simulator.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JCS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Simulator.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JCS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Simulator.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(JCS.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Simulator().setVisible(false);
+                new JCS().setVisible(false);
             }
         });
     }
@@ -818,18 +807,25 @@ public class Simulator extends javax.swing.JFrame {
     private javax.swing.JButton allMaskButton;
     private javax.swing.JButton allMaskButton1;
     private javax.swing.JPanel backgroundPanel;
+    private javax.swing.JLabel caminoLabel;
     private javax.swing.JButton closeButton;
     private javax.swing.JButton closeButton1;
     private javax.swing.JTextField errorLabel;
     private javax.swing.JTextField errorLabel1;
     private javax.swing.JDialog initialSettings;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JLabel loadingLabel;
+    private javax.swing.JLabel mascarillaLabel;
     private javax.swing.JButton maskRandomButton;
     private javax.swing.JButton maskRandomButton1;
     private javax.swing.JButton nextButton;
+    private javax.swing.JDialog nodeInformation;
     private javax.swing.JTextField nodosTextField;
     private javax.swing.JLabel numberLabel;
     private javax.swing.JLabel numberNodesLabel;
