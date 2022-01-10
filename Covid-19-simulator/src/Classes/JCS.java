@@ -593,6 +593,7 @@ public class JCS extends javax.swing.JFrame {
                         nextButton.doClick();
                         // Así, se da la impresión de que se ejecuta cada cierto tiempo
                     } catch (InterruptedException e) {
+                        System.out.println("Error");
                     }
                 }
             }
@@ -679,15 +680,15 @@ public class JCS extends javax.swing.JFrame {
     }//GEN-LAST:event_closeButtonKeyPressed
 
     private void tableroMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableroMouseEntered
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_tableroMouseEntered
 
     private void nextButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nextButtonMouseClicked
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_nextButtonMouseClicked
 
     private void tableroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableroMouseClicked
-        // TODO add your handling code here:
+        
     }//GEN-LAST:event_tableroMouseClicked
 
     private void tableroMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableroMousePressed
@@ -764,7 +765,7 @@ public class JCS extends javax.swing.JFrame {
     }//GEN-LAST:event_nextButtonActionPerformed
 
     private void numberLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_numberLabelMouseClicked
-        // TODO add your handling code here:
+       
     }//GEN-LAST:event_numberLabelMouseClicked
 
     /**
