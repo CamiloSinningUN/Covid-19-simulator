@@ -1,4 +1,4 @@
-package lab02_juanjulio_jorgesalazar_camilosinning;
+package Classes;
 
 import Listas.ListaNodos;
 import java.awt.Graphics;

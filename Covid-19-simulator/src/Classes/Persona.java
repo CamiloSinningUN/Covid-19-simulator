@@ -1,4 +1,4 @@
-package lab02_juanjulio_jorgesalazar_camilosinning;
+package Classes;
 
 public class Persona {
     int enfermo;

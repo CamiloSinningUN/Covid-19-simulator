@@ -1,5 +1,5 @@
 package Listas;
-import lab02_juanjulio_jorgesalazar_camilosinning.Nodo;
+import Classes.Nodo;
 
 public class ListaNodos {
     public Nodo minodo;

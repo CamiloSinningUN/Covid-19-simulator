@@ -1,4 +1,4 @@
-package lab02_juanjulio_jorgesalazar_camilosinning;
+package Classes;
 
 import Listas.ListaNodos;
 import java.awt.Color;
@@ -8,21 +8,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
-
-class nodosDibujados {
-
-    int numero;
-    double x;
-    double y;
-    nodosDibujados link;
-
-    public nodosDibujados(int numero, double x, double y) {
-        this.numero = numero;
-        this.x = x;
-        this.y = y;
-    }
-
-}
+import Classes.nodosDibujados;
 
 public class Graficar {
 
