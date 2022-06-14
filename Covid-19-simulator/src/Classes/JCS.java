@@ -113,14 +113,16 @@ public class JCS extends javax.swing.JFrame {
 
         initialSettings.setMinimumSize(new java.awt.Dimension(391, 605));
         initialSettings.setUndecorated(true);
+        initialSettings.getContentPane().setLayout(new java.awt.BorderLayout());
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel3.setFont(new java.awt.Font("Tw Cen MT Condensed", 0, 60)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Tw Cen MT Condensed", 0, 36)); // NOI18N
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("Número de nodos");
-        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 110, 340, -1));
+        jPanel2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 130, 310, -1));
 
         nodosTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         nodosTextField.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true));
@@ -131,15 +133,15 @@ public class JCS extends javax.swing.JFrame {
         });
         jPanel2.add(nodosTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 180, 310, 30));
 
-        jLabel4.setFont(new java.awt.Font("Tw Cen MT Condensed", 0, 70)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("Tw Cen MT Condensed", 0, 36)); // NOI18N
         jLabel4.setText("Modo");
-        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 280, -1, 50));
+        jPanel2.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 290, -1, 50));
 
         withoutMaskButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/Whithout MAsk.png"))); // NOI18N
         withoutMaskButton.setToolTipText("Without a mask");
         withoutMaskButton.setBorderPainted(false);
         withoutMaskButton.setContentAreaFilled(false);
-        withoutMaskButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        withoutMaskButton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         withoutMaskButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 withoutMaskButtonActionPerformed(evt);
@@ -151,7 +153,7 @@ public class JCS extends javax.swing.JFrame {
         allMaskButton.setToolTipText("With mask");
         allMaskButton.setBorderPainted(false);
         allMaskButton.setContentAreaFilled(false);
-        allMaskButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        allMaskButton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         allMaskButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 allMaskButtonActionPerformed(evt);
@@ -163,7 +165,7 @@ public class JCS extends javax.swing.JFrame {
         maskRandomButton.setToolTipText("Random");
         maskRandomButton.setBorderPainted(false);
         maskRandomButton.setContentAreaFilled(false);
-        maskRandomButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        maskRandomButton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         maskRandomButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 maskRandomButtonActionPerformed(evt);
@@ -175,7 +177,7 @@ public class JCS extends javax.swing.JFrame {
         startButton.setToolTipText("Start");
         startButton.setBorderPainted(false);
         startButton.setContentAreaFilled(false);
-        startButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        startButton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         startButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 startButtonActionPerformed(evt);
@@ -188,7 +190,7 @@ public class JCS extends javax.swing.JFrame {
         closeButton1.setToolTipText("Close");
         closeButton1.setBorderPainted(false);
         closeButton1.setContentAreaFilled(false);
-        closeButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        closeButton1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         closeButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeButton1ActionPerformed(evt);
@@ -201,7 +203,7 @@ public class JCS extends javax.swing.JFrame {
         errorLabel.setForeground(new java.awt.Color(255, 99, 71));
         errorLabel.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         errorLabel.setBorder(null);
-        errorLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        errorLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         errorLabel.setFocusable(false);
         errorLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -225,7 +227,7 @@ public class JCS extends javax.swing.JFrame {
         errorLabel1.setForeground(new java.awt.Color(255, 99, 71));
         errorLabel1.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         errorLabel1.setBorder(null);
-        errorLabel1.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        errorLabel1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         errorLabel1.setFocusable(false);
         errorLabel1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -327,7 +329,7 @@ public class JCS extends javax.swing.JFrame {
         closeButton.setToolTipText("Close");
         closeButton.setBorderPainted(false);
         closeButton.setContentAreaFilled(false);
-        closeButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        closeButton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         closeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 closeButtonActionPerformed(evt);
@@ -357,7 +359,7 @@ public class JCS extends javax.swing.JFrame {
         resetButton.setToolTipText("Reset");
         resetButton.setBorderPainted(false);
         resetButton.setContentAreaFilled(false);
-        resetButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        resetButton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         resetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetButtonActionPerformed(evt);
@@ -369,7 +371,7 @@ public class JCS extends javax.swing.JFrame {
         nextButton.setToolTipText("Next");
         nextButton.setBorderPainted(false);
         nextButton.setContentAreaFilled(false);
-        nextButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        nextButton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         nextButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 nextButtonMouseClicked(evt);
@@ -383,7 +385,7 @@ public class JCS extends javax.swing.JFrame {
         backgroundPanel.add(nextButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 30, 80, -1));
 
         settingsPanel.setBackground(new java.awt.Color(255, 255, 255));
-        settingsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true), "Settings", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tw Cen MT Condensed", 0, 24))); // NOI18N
+        settingsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true), "Settings", 2, 2, new java.awt.Font("Tw Cen MT Condensed", 0, 24))); // NOI18N
         settingsPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         numberNodesLabel.setFont(new java.awt.Font("Tw Cen MT Condensed", 0, 24)); // NOI18N
@@ -464,14 +466,14 @@ public class JCS extends javax.swing.JFrame {
         backgroundPanel.add(tablero, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 150, 1110, 450));
 
         playStopPanel.setBackground(new java.awt.Color(255, 255, 255));
-        playStopPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true), "Play/Stop", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Tw Cen MT Condensed", 0, 24))); // NOI18N
+        playStopPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true), "Play/Stop", 2, 2, new java.awt.Font("Tw Cen MT Condensed", 0, 24))); // NOI18N
         playStopPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         playButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/play1.png"))); // NOI18N
         playButton.setToolTipText("Play");
         playButton.setBorderPainted(false);
         playButton.setContentAreaFilled(false);
-        playButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        playButton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         playButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 playButtonActionPerformed(evt);
@@ -483,7 +485,7 @@ public class JCS extends javax.swing.JFrame {
         stopButton.setToolTipText("Stop");
         stopButton.setBorderPainted(false);
         stopButton.setContentAreaFilled(false);
-        stopButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        stopButton.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         stopButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 stopButtonActionPerformed(evt);
