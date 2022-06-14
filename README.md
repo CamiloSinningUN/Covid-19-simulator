@@ -2,6 +2,10 @@
 
 Using graphs and certain propagation rules, a program is designed that creates a graph that simulates the spread of the Covid-19 virus.
 
+## Preview
+
+![covid-19-preview](https://user-images.githubusercontent.com/61607058/173708320-7db24ea2-c05b-4059-9f7b-2266d2624a5d.png)
+
 ## Starting 🚀
 
 You can get a copy of the project simply by downloading it from this repository.
